@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Scan">
+
+
+    <TextView
+        android:id="@+id/textDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Display Text"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/captureImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Capture Image"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:layout_above="@id/extractText"/>
+
+    <Button
+        android:id="@+id/extractText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Extract Text"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
