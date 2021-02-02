@@ -9,7 +9,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 //ailin commit test...
-    // Michael testing commit
+    //Michael test commit
     private Button btnAction;
 
     @Override
