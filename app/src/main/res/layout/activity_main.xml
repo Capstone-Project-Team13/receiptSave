@@ -8,7 +8,7 @@
     tools:context=".MainActivity"
     android:orientation="vertical"
     android:padding="10dp"
-    android:background="#fcfcfc"
+    android:background="@drawable/background"
     android:gravity="center"
     android:id="@+id/ll">
     <LinearLayout
