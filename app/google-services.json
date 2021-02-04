@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "161482962709",
+    "firebase_url": "https://receiptsavedb-default-rtdb.firebaseio.com",
+    "project_id": "receiptsavedb",
+    "storage_bucket": "receiptsavedb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:161482962709:android:a7690279f0ff6258809b1c",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "161482962709-921q1jm25he1c1sukjfsjdh519dtmdot.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4BhqNPDFEZv9TX3rV7TnD0Y4712xUNxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "161482962709-921q1jm25he1c1sukjfsjdh519dtmdot.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
