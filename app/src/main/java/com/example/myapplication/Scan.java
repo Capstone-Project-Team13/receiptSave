@@ -7,8 +7,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,16 +20,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
+import java.util.List;
+
 
 public class Scan extends AppCompatActivity {
 
-    ImageView imageView;
-    TextView textView;
+    private ImageView imageView;
+    private LinearLayout items;
+    private LinearLayout price;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,16 +41,23 @@ public class Scan extends AppCompatActivity {
         setContentView(R.layout.activity_scan);
 
         imageView = findViewById(R.id.imageId);
-        textView = findViewById(R.id.textId);
-        //check permission for Camera
+        items = findViewById(R.id.items);
+        price = findViewById(R.id.price);
+
+        //Check permission for Camera
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 1000);
         }
     }
 
-    // Start the camera
     public void captureReceipt(View view) {
+        // Accessing the camera
         Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Clear the view before taking pictures
+        items.removeAllViews();
+        price.removeAllViews();
+
+        // Start camera
         if (pictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(pictureIntent, 1000);
         }
@@ -55,13 +68,13 @@ public class Scan extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Bundle bundle = data.getExtras();
 
-        //from bundle, extract the image
+        // From bundle, extract the image
         Bitmap imageBitmap  = (Bitmap) bundle.get("data");
-        // set image in imageView
+        // Set image in imageView
         imageView.setImageBitmap(imageBitmap);
-        //process the image
+
         // 1. To create a FirebaseVisionImage object from a Bitmap object
-        FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap );
+        FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
         // 2. Get an instance of FirebaseVisionTextRecognizer
         FirebaseVisionTextRecognizer firebaseVisionTextRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
         // 3. Pass the image to the processImage method
@@ -69,9 +82,31 @@ public class Scan extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                     @Override
                     public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                        String s = firebaseVisionText.getText();
-                        textView.setText(s);
 
+                        List<FirebaseVisionText.TextBlock> resultBlocks = firebaseVisionText.getTextBlocks();
+                        for (FirebaseVisionText.TextBlock block : resultBlocks) {
+                            for (FirebaseVisionText.Line line : block.getLines()) {
+                                String lineText = line.getText();
+                                EditText text = new EditText(getApplicationContext());
+
+                                // price
+                                if(lineText.contains(".")){
+                                    lineText = lineText.replaceAll("[a-zA-Z]","");
+                                    text.setText(lineText);
+                                    price.addView(text);
+                                }
+                                // Items
+                                else {
+                                    lineText = lineText.replaceAll("[0-9]","");
+                                    text.setText(lineText);
+                                    items.addView(text);
+                                }
+
+//                                for (Text.Element element : line.getElements()) {
+//                                    String elementText = element.getText();//
+//                                }
+                            }
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

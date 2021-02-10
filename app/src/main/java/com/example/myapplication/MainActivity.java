@@ -9,8 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-//ailin commit test...
-    //Michael test commit
+
     private Button btnAction;
     private CardView scanCard;
     @Override
