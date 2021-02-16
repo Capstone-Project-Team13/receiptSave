@@ -14,7 +14,8 @@
         <ImageView
             android:id="@+id/imageId"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"/>
     </LinearLayout>
 
     <Button
@@ -22,7 +23,12 @@
         android:layout_height="wrap_content"
         android:text="Capture Receipts"
         android:onClick="captureReceipt"/>
-    
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pick Receipts from Gallery"
+        android:onClick="pickReceipt"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

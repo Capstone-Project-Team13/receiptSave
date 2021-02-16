@@ -1,9 +1,12 @@
 package com.example.myapplication;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -16,7 +19,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -25,7 +31,13 @@ import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 
@@ -34,6 +46,13 @@ public class Scan extends AppCompatActivity {
     private ImageView imageView;
     private LinearLayout items;
     private LinearLayout price;
+    private final int CAPTURE_IMAGE = 1000;
+    private final int PICK_GALLERY_IMAGE = 2000;
+    private final int CAMERA_REQUEST = 100;
+    private final int WRITE_REQUEST = 200;
+
+    private String cameraPermission[];
+    private String writePermission[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,33 +64,80 @@ public class Scan extends AppCompatActivity {
         price = findViewById(R.id.price);
 
         //Check permission for Camera
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, 1000);
+//        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
+//        }
+        cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        writePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    }
+
+    // CaptureReceipt Button
+    public void captureReceipt(View view) {
+        if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, cameraPermission, CAMERA_REQUEST);
+        }
+        else {
+            // Clear the view before taking pictures
+            items.removeAllViews();
+            price.removeAllViews();
+
+            Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Start camera
+            if (pictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(pictureIntent, CAPTURE_IMAGE);
+            }
         }
     }
 
-    public void captureReceipt(View view) {
-        // Accessing the camera
-        Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Clear the view before taking pictures
-        items.removeAllViews();
-        price.removeAllViews();
+    // Pick Receipts from Gallery Button
+    public void pickReceipt(View view) {
+        if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, writePermission, WRITE_REQUEST);
+        }
+        else {
+            // Clear the view
+            items.removeAllViews();
+            price.removeAllViews();
 
-        // Start camera
-        if (pictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(pictureIntent, 1000);
+//            Intent pictureIntent = new Intent(Intent.ACTION_PICK);
+//            pictureIntent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+//            startActivityForResult(pictureIntent, PICK_GALLERY_IMAGE);
+            Intent pictureIntent = new Intent();
+            pictureIntent.setType("image/*");
+            pictureIntent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(pictureIntent, PICK_GALLERY_IMAGE);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Bundle bundle = data.getExtras();
 
-        // From bundle, extract the image
-        Bitmap imageBitmap  = (Bitmap) bundle.get("data");
-        // Set image in imageView
-        imageView.setImageBitmap(imageBitmap);
+        Bitmap imageBitmap = null;
+        if (resultCode != RESULT_OK){
+            return;
+        }
+        if (requestCode == CAPTURE_IMAGE) {
+            Bundle bundle = data.getExtras();
+            imageBitmap = (Bitmap) bundle.get("data");
+            imageView.setImageBitmap(imageBitmap);
+        }
+        else if (requestCode == PICK_GALLERY_IMAGE){
+            InputStream inputStream;
+            try {
+                inputStream = getContentResolver().openInputStream(data.getData());
+                imageBitmap = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+                Uri uri = data.getData();
+                Glide.with(this).load(uri).override(150,150).into(imageView);
+             //   imageView.setImageBitmap(imageBitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else if (resultCode == RESULT_CANCELED){
+            return;
+        }
 
         // 1. To create a FirebaseVisionImage object from a Bitmap object
         FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
