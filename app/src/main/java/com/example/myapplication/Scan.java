@@ -27,6 +27,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
@@ -36,6 +38,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -148,7 +151,8 @@ public class Scan extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                     @Override
                     public void onSuccess(FirebaseVisionText firebaseVisionText) {
-
+                        ArrayList<String> prices = new ArrayList<>();
+                        ArrayList<String> Items = new ArrayList<>();
                         List<FirebaseVisionText.TextBlock> resultBlocks = firebaseVisionText.getTextBlocks();
                         for (FirebaseVisionText.TextBlock block : resultBlocks) {
                             for (FirebaseVisionText.Line line : block.getLines()) {
@@ -160,12 +164,14 @@ public class Scan extends AppCompatActivity {
                                     lineText = lineText.replaceAll("[a-zA-Z]","");
                                     text.setText(lineText);
                                     price.addView(text);
+                                    prices.add(text.getText().toString());
                                 }
                                 // Items
                                 else {
                                     lineText = lineText.replaceAll("[0-9]","");
                                     text.setText(lineText);
                                     items.addView(text);
+                                    Items.add(text.getText().toString());
                                 }
 
 //                                for (Text.Element element : line.getElements()) {
@@ -173,6 +179,7 @@ public class Scan extends AppCompatActivity {
 //                                }
                             }
                         }
+                        Builddatabase(Items, prices);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -182,4 +189,23 @@ public class Scan extends AppCompatActivity {
                     }
                 });
     }
+    public void Builddatabase(ArrayList<String> Items, ArrayList<String> prices){
+        System.out.println("am here");
+        DatabaseReference element = FirebaseDatabase.getInstance().getReference().child("ReceiptItems");
+        int i = Items.size();
+        int j = prices.size();
+        int groceries =0;
+        int cost =0;
+//        SingleItem Theitem = new SingleItem(Items.get(0), prices.get(0));
+//        element.push().setValue(Theitem);
+//        System.out.println(Items.get(0));
+        while(groceries < i && cost < j){
+            SingleItem Theitem = new SingleItem(Items.get(groceries), prices.get(cost));
+            element.push().setValue(Theitem);
+            groceries++;
+            cost++;
+            //Toast.makeText(MainActivity.this, "Data inserted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
