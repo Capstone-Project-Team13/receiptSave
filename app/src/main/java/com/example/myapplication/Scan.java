@@ -23,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.DatabaseFiles.ReceiptDatabase;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -179,7 +180,7 @@ public class Scan extends AppCompatActivity {
 //                                }
                             }
                         }
-                        Builddatabase(Items, prices);
+                        ReceiptDatabase.Builddatabase(Items, prices);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -189,23 +190,6 @@ public class Scan extends AppCompatActivity {
                     }
                 });
     }
-    public void Builddatabase(ArrayList<String> Items, ArrayList<String> prices){
-        System.out.println("am here");
-        DatabaseReference element = FirebaseDatabase.getInstance().getReference().child("ReceiptItems");
-        int i = Items.size();
-        int j = prices.size();
-        int groceries =0;
-        int cost =0;
-//        SingleItem Theitem = new SingleItem(Items.get(0), prices.get(0));
-//        element.push().setValue(Theitem);
-//        System.out.println(Items.get(0));
-        while(groceries < i && cost < j){
-            SingleItem Theitem = new SingleItem(Items.get(groceries), prices.get(cost));
-            element.push().setValue(Theitem);
-            groceries++;
-            cost++;
-            //Toast.makeText(MainActivity.this, "Data inserted", Toast.LENGTH_SHORT).show();
-        }
-    }
+
 
 }
