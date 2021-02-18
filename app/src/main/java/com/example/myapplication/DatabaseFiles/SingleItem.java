@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.DatabaseFiles;
 
 public class SingleItem {
     String item;
