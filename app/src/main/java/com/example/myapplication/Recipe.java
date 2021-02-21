@@ -74,9 +74,9 @@ public class Recipe extends AppCompatActivity {
     public void searchRecipe(View view) {
         String searchString = " ";
         for (int i=0; i<searchList.size(); i++){
-            searchString = searchString + searchList.get(i);
+            searchString = searchString + " " +searchList.get(i);
         }
-        searchString = searchString + "food recipe";
+        searchString = searchString + " food recipe";
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com/search?q="+searchString));
         startActivity(browserIntent);
     }
