@@ -2,10 +2,14 @@ package com.example.myapplication;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -13,7 +17,9 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,14 +53,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 public class Scan extends AppCompatActivity {
 
     private ImageView imageView;
-    private LinearLayout items;
-    private LinearLayout expirationDate;
+    private LinearLayout itemsLayout;
+    private LinearLayout expDateLayout;
     private final int CAPTURE_IMAGE = 1000;
     private final int PICK_GALLERY_IMAGE = 2000;
     private final int CAMERA_REQUEST = 100;
@@ -66,6 +74,7 @@ public class Scan extends AppCompatActivity {
     private ArrayList<Spinner> expList = new ArrayList<>();
     private ArrayList<String> expArray = new ArrayList<>();
     private ArrayList<String> itemArray = new ArrayList<>();
+    private HashMap expHashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +82,8 @@ public class Scan extends AppCompatActivity {
         setContentView(R.layout.activity_scan);
 
         imageView = findViewById(R.id.imageId);
-        items = findViewById(R.id.items);
-        expirationDate = findViewById(R.id.expirationDate);
+        itemsLayout = findViewById(R.id.items);
+        expDateLayout = findViewById(R.id.expirationDate);
 
         cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         writePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -124,7 +133,7 @@ public class Scan extends AppCompatActivity {
     private void saveGroceryItemsAndExpDate() {
         String itemsString = "";
         String expString = "";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.US);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 
@@ -160,6 +169,9 @@ public class Scan extends AppCompatActivity {
                 calendar.add(Calendar.MONTH, 6);
                 expString = simpleDateFormat.format(calendar.getTime());
             }
+            else {
+                expString = expHashMap.get(i).toString();
+            }
             expArray.add(expString);
             calendar.setTime(new Date());
         }
@@ -173,8 +185,8 @@ public class Scan extends AppCompatActivity {
         }
         else {
             // Clear the view before taking pictures
-            items.removeAllViews();
-            expirationDate.removeAllViews();
+            itemsLayout.removeAllViews();
+            expDateLayout.removeAllViews();
 
             Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Start camera
@@ -191,8 +203,8 @@ public class Scan extends AppCompatActivity {
         }
         else {
             // Clear the view
-            items.removeAllViews();
-            expirationDate.removeAllViews();
+            itemsLayout.removeAllViews();
+            expDateLayout.removeAllViews();
 
             // Open gallery
             Intent pictureIntent = new Intent();
@@ -207,10 +219,70 @@ public class Scan extends AppCompatActivity {
         TextView expTextView = new TextView((getApplicationContext()));
         itemTextView.setText("Items");
         itemTextView.setGravity(Gravity.CENTER);
-        items.addView(itemTextView);
+        itemsLayout.addView(itemTextView);
         expTextView.setGravity(Gravity.CENTER);
         expTextView.setText("Expiration Date");
-        expirationDate.addView(expTextView);
+        expDateLayout.addView(expTextView);
+    }
+    // Set dropdown menu on EXP column
+    private void setSpinnerField(Spinner expSpinner) {
+        String[] expDateArray = {"3 Days", "1 Week", "2 Weeks", "3 Weeks", "1 Months",
+                "3 Months", "6 Months", "Date from Calender"};
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                getApplicationContext(),
+                android.R.layout.simple_spinner_item,
+                expDateArray);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        params.gravity = Gravity.RIGHT;
+        params.height = 135;
+        expSpinner.setLayoutParams(params);
+        expSpinner.setAdapter(arrayAdapter);
+    }
+    private void pickDateFromCalendar(Spinner expSpinner) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.US);
+        expSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedMenu = parent.getItemAtPosition(position).toString();
+                if(selectedMenu.contains("Calender")) {
+                    DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            calendar.set(Calendar.YEAR, year);
+                            calendar.set(Calendar.MONTH, month);
+                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                            String dateFromCalendar = dateFormat.format(calendar.getTime());
+                            int expSpinnerId = expSpinner.getId();
+                            expHashMap.put(expSpinnerId, dateFromCalendar);
+                            Toast.makeText(Scan.this, "" + dateFromCalendar, Toast.LENGTH_LONG).show();
+                        }
+                    };
+                    DatePickerDialog dialog = new DatePickerDialog(Scan.this,
+                            android.R.style.Theme_Dialog,
+                            dateListener,
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH));
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            expSpinner.setSelection(0);
+                        }
+                    });
+                    dialog.show();
+
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     // Perform OCR
@@ -227,14 +299,6 @@ public class Scan extends AppCompatActivity {
 //                        ArrayList<String> prices = new ArrayList<>();
 //                        ArrayList<String> Items = new ArrayList<>();
                         List<FirebaseVisionText.TextBlock> resultBlocks = firebaseVisionText.getTextBlocks();
-                        String[] expDateArray ={"3 Days","1 Week", "2 Weeks", "3 Weeks", "1 Months",
-                                "3 Months", "6 Months", "Choose Date from Calender"};
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                                getApplicationContext(),
-                                android.R.layout.simple_spinner_item,
-                                expDateArray);
-                        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
                         // Prompt error message that no text found after scan a receipt
                         if(resultBlocks.isEmpty()) {
                             Toast.makeText(
@@ -244,18 +308,16 @@ public class Scan extends AppCompatActivity {
                             return;
                         }
                         // Extract text
+                        int idNum =0;
                         for (FirebaseVisionText.TextBlock block : resultBlocks) {
                             for (FirebaseVisionText.Line line : block.getLines()) {
                                 String lineText = line.getText();
                                 EditText editText = new EditText(getApplicationContext());
                                 Spinner expSpinner = new Spinner(getApplicationContext());
-                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                                        LinearLayout.LayoutParams.MATCH_PARENT);
-                                params.gravity = Gravity.RIGHT;
-                                params.height = 135;
-                                expSpinner.setLayoutParams(params);
-                                expSpinner.setAdapter(arrayAdapter);
+                                setSpinnerField(expSpinner);
+                                expSpinner.setId(idNum);
+                                pickDateFromCalendar(expSpinner);
+                                idNum ++;
 
                                 // price
                                 if(lineText.contains(".")){
@@ -269,11 +331,10 @@ public class Scan extends AppCompatActivity {
                                     lineText = lineText.replaceAll("[0-9]","");
                                     editText.setText(lineText);
                                     itemList.add(editText);
-                                    items.addView(editText);
+                                    itemsLayout.addView(editText);
                                     expList.add(expSpinner);
-                                    expirationDate.addView(expSpinner);
+                                    expDateLayout.addView(expSpinner);
 //                                    Items.add(text.getText().toString());
-
                                 }
                             }
                         }
