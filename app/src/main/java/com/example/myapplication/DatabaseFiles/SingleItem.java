@@ -2,26 +2,26 @@ package com.example.myapplication.DatabaseFiles;
 
 public class SingleItem {
     String item;
-    String price;
+    String expiration_date;
 
-    public SingleItem(String item, String price) {
+    public SingleItem(String item, String expiration_date) {
         this.item = item;
-        this.price = price;
-    }
-
-    public void setItem(String item) {
-        this.item = item;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
+        this.expiration_date = expiration_date;
     }
 
     public String getItem() {
         return item;
     }
 
-    public String getPrice() {
-        return price;
+    public String getExpiration_date() {
+        return expiration_date;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public void setExpiration_date(String expiration_date) {
+        this.expiration_date = expiration_date;
     }
 }

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
@@ -15,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.example.myapplication.DatabaseFiles.ReceiptDatabase;
 
 public class Receipt extends AppCompatActivity {
 
@@ -75,6 +78,7 @@ public class Receipt extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         Bitmap imageBitmap = null;
+        Uri imageUri = null;
         if (resultCode != RESULT_OK) {
             return;
         }
@@ -82,6 +86,16 @@ public class Receipt extends AppCompatActivity {
             Bundle bundle = data.getExtras();
             imageBitmap = (Bitmap) bundle.get("data");
             imageView.setImageBitmap(imageBitmap);
+            ReceiptDatabase.uploadToFirebase(imageBitmap);
+//            if (data != null) {
+//                imageUri = data.getData();
+//                //imageView.setImageURI(imageUri);
+//                if (imageUri == null) {
+//                    System.out.println("to the database");
+//                   // ReceiptDatabase.uploadToFirebase(imageUri);
+//                }
+//            }
+            //System.out.println("here here");
         }
 
 //        else if (resultCode == RESULT_CANCELED) {
