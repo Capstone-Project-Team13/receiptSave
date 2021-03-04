@@ -23,7 +23,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,18 +38,15 @@ import com.example.myapplication.DatabaseFiles.ReceiptDatabase;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -237,7 +233,7 @@ public class Scan extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.RIGHT;
-        params.height = 135;
+        params.height = 120;
         expSpinner.setLayoutParams(params);
         expSpinner.setAdapter(arrayAdapter);
     }
@@ -296,8 +292,6 @@ public class Scan extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                     @Override
                     public void onSuccess(FirebaseVisionText firebaseVisionText) {
-//                        ArrayList<String> prices = new ArrayList<>();
-//                        ArrayList<String> Items = new ArrayList<>();
                         List<FirebaseVisionText.TextBlock> resultBlocks = firebaseVisionText.getTextBlocks();
                         // Prompt error message that no text found after scan a receipt
                         if(resultBlocks.isEmpty()) {
@@ -310,35 +304,45 @@ public class Scan extends AppCompatActivity {
                         // Extract text
                         int idNum =0;
                         for (FirebaseVisionText.TextBlock block : resultBlocks) {
-                            for (FirebaseVisionText.Line line : block.getLines()) {
-                                String lineText = line.getText();
-                                EditText editText = new EditText(getApplicationContext());
-                                Spinner expSpinner = new Spinner(getApplicationContext());
-                                setSpinnerField(expSpinner);
-                                expSpinner.setId(idNum);
-                                pickDateFromCalendar(expSpinner);
-                                idNum ++;
+                            if((block.getText().toUpperCase().contains("DEBIT"))||
+                                    (block.getText().toUpperCase().contains("SUBTOTAL"))) {
+                                break;
+                            }
+                            if(!((block.getText().toUpperCase().contains("ALDI"))||
+                                    (block.getText().toUpperCase().contains("CASH")))) {
 
-                                // price
-                                if(lineText.contains(".")){
-                                    lineText = lineText.replaceAll("[a-zA-Z]","");
-                                    editText.setText(lineText);
+                                for (FirebaseVisionText.Line line : block.getLines()) {
+                                    String lineText = line.getText();
+                                    EditText editText = new EditText(getApplicationContext());
+                                    Spinner expSpinner = new Spinner(getApplicationContext());
+                                    setSpinnerField(expSpinner);
+                                    expSpinner.setId(idNum);
+                                    pickDateFromCalendar(expSpinner);
+                                    idNum++;
+
+                                    // price
+                                    if (lineText.contains(".")) {
+                                        lineText = lineText.replaceAll("[a-zA-Z]", "");
+                                        editText.setText(lineText);
 //                                    price.addView(text);
-//                                    prices.add(text.getText().toString());
-                                }
-                                // Items & Exp Date
-                                else {
-                                    lineText = lineText.replaceAll("[0-9]","");
-                                    editText.setText(lineText);
-                                    itemList.add(editText);
-                                    itemsLayout.addView(editText);
-                                    expList.add(expSpinner);
-                                    expDateLayout.addView(expSpinner);
-//                                    Items.add(text.getText().toString());
+                                    }
+                                    // Items & Exp Date
+                                    else {
+                                        lineText = lineText.replaceAll("[0-9]", "");
+                                        if(lineText.length() <= 2) {
+                                            lineText = "";
+                                        }
+                                        if(!lineText.isEmpty()) {
+                                            editText.setText(lineText);
+                                            itemList.add(editText);
+                                            itemsLayout.addView(editText);
+                                            expList.add(expSpinner);
+                                            expDateLayout.addView(expSpinner);
+                                        }
+                                    }
                                 }
                             }
                         }
-//                        ReceiptDatabase.Builddatabase(Items, prices);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

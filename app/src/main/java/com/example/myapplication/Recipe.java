@@ -47,7 +47,6 @@ public class Recipe extends AppCompatActivity {
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                     String item = snapshot.child("item").getValue().toString();
                     itemList.add(item);
-                    //Log.d("Recipe", "what?????: " + snapshot.getValue());
                 }
                 adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, itemList);
                 listView.setAdapter(adapter);
