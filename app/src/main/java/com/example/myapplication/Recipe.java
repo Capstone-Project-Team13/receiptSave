@@ -12,6 +12,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,9 +33,9 @@ public class Recipe extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
-
+        String user = FirebaseAuth.getInstance().getCurrentUser().getUid();
         listView = findViewById(R.id.listId);
-        mDatabase = FirebaseDatabase.getInstance().getReference("ReceiptItems");
+        mDatabase = FirebaseDatabase.getInstance().getReference("ReceiptItems").child(user);
 
         getData();
     }

@@ -4,7 +4,11 @@ public class SingleItem {
     String item;
     String expiration_date;
 
+
+
+
     public SingleItem(String item, String expiration_date) {
+
         this.item = item;
         this.expiration_date = expiration_date;
     }
