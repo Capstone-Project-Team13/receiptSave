@@ -21,11 +21,14 @@ import java.util.ArrayList;
 public class Food extends AppCompatActivity {
 
     private ListView listView;
-    private ArrayAdapter adapter;
+    private ListView listViewDate;
+    private ArrayAdapter itemAdapter;
+    private ArrayAdapter dataAdapter;
     private DatabaseReference mDatabase;
     private ArrayList<String> itemList = new ArrayList<String>();
     private ArrayList<String> listDB = new ArrayList<String>();
     private ArrayList<String> keyDB = new ArrayList<String>();
+    private ArrayList<String> dateList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,7 @@ public class Food extends AppCompatActivity {
         setContentView(R.layout.activity_food);
         listView = findViewById(R.id.listId);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        listViewDate = findViewById(R.id.listDate);
         getData();
     }
 
@@ -41,37 +44,46 @@ public class Food extends AppCompatActivity {
         mDatabase.child("ReceiptItems").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                // Get data from DB
                 for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                    listDB.add(snapshot.toString());
-                    String item = snapshot.child("item").getValue().toString();
-                    itemList.add(item);
-
                     String keys = snapshot.getKey();
+                    String item = snapshot.child("item").getValue().toString();
+                    String exDate = snapshot.child("expiration_date").getValue().toString();
+
+                    itemList.add(item);
+                    dateList.add(exDate);
+                    listDB.add(snapshot.toString());
                     keyDB.add(keys);
-
                 }
-                for (int i=0;i<itemList.size();i++)
-                   // Log.d("Recipe", "what???????????: " + itemList.get(i));
+//                for (int i=0;i<itemList.size();i++){
+//                    String newText = itemList.get(i) + " " +dateList.get(i);
+//
+//                    Log.d("Recipe", "what???????????: " + newText);
+//                }
 
-                adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, itemList);
-
-                listView.setAdapter(adapter);
-
+                // list to adapter
+                itemAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, itemList);
+                dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, dateList);
+                // Set listView
+                listView.setAdapter(itemAdapter);
+                listViewDate.setAdapter(dataAdapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                         String deleteItem = itemList.get(position);
-
+                        // Delete clicked item form DB
                         if (listDB.get(position).contains(deleteItem)) {
 
                             mDatabase.child("ReceiptItems").child(keyDB.get(position)).removeValue();
                             //listView.removeView(parent);
                             //adapter.notifyDataSetChanged();
                         }
+//                        listView.clearChoices() ;
+//                        itemAdapter.notifyDataSetChanged();
                     }
                 });
+
             }
 
             @Override
