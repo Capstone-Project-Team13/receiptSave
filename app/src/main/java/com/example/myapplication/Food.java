@@ -10,6 +10,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,7 +42,8 @@ public class Food extends AppCompatActivity {
     }
 
     private void getData(){
-        mDatabase.child("ReceiptItems").addListenerForSingleValueEvent(new ValueEventListener() {
+        String user = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mDatabase.child("ReceiptItems").child(user).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // Get data from DB
@@ -75,7 +77,7 @@ public class Food extends AppCompatActivity {
                         // Delete clicked item form DB
                         if (listDB.get(position).contains(deleteItem)) {
 
-                            mDatabase.child("ReceiptItems").child(keyDB.get(position)).removeValue();
+                            mDatabase.child("ReceiptItems").child(user).child(keyDB.get(position)).removeValue();
                             //listView.removeView(parent);
                             //adapter.notifyDataSetChanged();
                         }

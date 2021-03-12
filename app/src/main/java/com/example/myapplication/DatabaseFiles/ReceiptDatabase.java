@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class ReceiptDatabase {
+    static String user = FirebaseAuth.getInstance().getCurrentUser().getUid();
     public static void Builddatabase(ArrayList<String> Items, ArrayList<String> expiration_date){
 
         DatabaseReference element = FirebaseDatabase.getInstance().getReference().child("ReceiptItems");
@@ -29,7 +31,7 @@ public class ReceiptDatabase {
 //        System.out.println(Items.get(0));
         while(groceries < i && exdate < j){
             SingleItem Theitem = new SingleItem(Items.get(groceries), expiration_date.get(exdate));
-            element.push().setValue(Theitem);
+            element.child(user).push().setValue(Theitem);
             groceries++;
             exdate++;
             //Toast.makeText(MainActivity.this, "Data inserted", Toast.LENGTH_SHORT).show();
@@ -39,7 +41,8 @@ public class ReceiptDatabase {
         StorageReference reference = FirebaseStorage.getInstance().getReference();
         final String randomKey = UUID.randomUUID().toString();
         StorageReference fileRef = reference.child("images/" + randomKey);
-
+//        System.out.println("tabara ");
+//         System.out.println("walala "+ user);
         //database access
          DatabaseReference root = FirebaseDatabase.getInstance().getReference("ReceiptImages");
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -57,7 +60,7 @@ public class ReceiptDatabase {
                                 //Uri downloadUri = uri;
                                 ImagetoDatabase theimage = new ImagetoDatabase(uri.toString());
 //                        //String modelId = root.push().getKey();  create the key (for future reference)
-                                root.push().setValue(theimage);
+                                root.child(user).push().setValue(theimage);
                             }
                         });
 

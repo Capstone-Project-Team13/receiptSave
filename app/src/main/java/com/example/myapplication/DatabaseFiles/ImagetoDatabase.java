@@ -3,8 +3,12 @@ package com.example.myapplication.DatabaseFiles;
 public class ImagetoDatabase {
     String Imageurl;
 
+
+
+
     public ImagetoDatabase(String imageurl) {
-        Imageurl = imageurl;
+        this.Imageurl = imageurl;
+
     }
 
     public String getImageurl() {
