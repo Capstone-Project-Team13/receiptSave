@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -41,7 +40,7 @@ public class Recipe extends AppCompatActivity {
         //Create adapter
         adapter = new ListViewAdapter();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("ReceiptItems");
+        //mDatabase = FirebaseDatabase.getInstance().getReference("ReceiptItems");
 
         getData();
     }
@@ -55,7 +54,7 @@ public class Recipe extends AppCompatActivity {
                     String item = snapshot.child("item").getValue().toString();
                     itemList.add(item);
                 }
-                adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, itemList);
+                //adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, itemList);
                 listView.setAdapter(adapter);
                 addAdapters();
 
