@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.myapplication.ListView.CheckableFoodLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal"
+    android:weightSum="5">
+
+        <TextView
+            android:id="@+id/fooditems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/expDates"
+            android:layout_width="113dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:gravity="center_vertical|end"
+            android:textSize="20sp" />
+
+        <CheckBox
+            android:id="@+id/foodCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8sp"
+            android:focusable="false"
+            android:clickable="false"
+            android:layout_weight="1"/>
+
+</com.example.myapplication.ListView.CheckableFoodLinearLayout>

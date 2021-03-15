@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.myapplication.ListView.ListViewAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 public class Recipe extends AppCompatActivity {
 
     private ListView listView;
-    //private ArrayAdapter adapter;
     private ListViewAdapter adapter;
     private DatabaseReference mDatabase;
     private ArrayList<String> itemList = new ArrayList<String>();
@@ -39,9 +39,6 @@ public class Recipe extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference("ReceiptItems").child(user);
         //Create adapter
         adapter = new ListViewAdapter();
-
-        //mDatabase = FirebaseDatabase.getInstance().getReference("ReceiptItems");
-
         getData();
     }
 
@@ -54,17 +51,13 @@ public class Recipe extends AppCompatActivity {
                     String item = snapshot.child("item").getValue().toString();
                     itemList.add(item);
                 }
-                //adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_expandable_list_item_1, itemList);
+
                 listView.setAdapter(adapter);
                 addAdapters();
-
-
-
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         if (!searchList.contains(itemList.get(position))) {
-                            //listView.setSelector(new PaintDrawable(0xfff0000));
                             searchList.add(itemList.get(position));
                         }
                         else {
@@ -97,7 +90,7 @@ public class Recipe extends AppCompatActivity {
     private void addAdapters() {
         for (int i=0; i<itemList.size();i++){
 
-            if (itemList.get(i).toLowerCase().equals("potatoes")){
+            if (itemList.get(i).toLowerCase().equals("potatoes")||itemList.get(i).toLowerCase().equals("potato")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.potatoes), itemList.get(i)) ;
             }
             else if(itemList.get(i).toLowerCase().equals("zucchini")){

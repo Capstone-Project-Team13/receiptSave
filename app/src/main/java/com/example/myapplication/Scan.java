@@ -98,9 +98,11 @@ public class Scan extends AppCompatActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_save:
-                Toast.makeText(this,"Save Button is Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Data Saved Successfully", Toast.LENGTH_SHORT).show();
                 saveReceiptToDatabase();
                 saveGroceryItemsAndExpDate();
+                itemsLayout.removeAllViews();
+                expDateLayout.removeAllViews();
                 return true;
 
             default:

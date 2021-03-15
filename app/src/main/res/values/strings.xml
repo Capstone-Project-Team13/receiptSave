@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ReceiptSave</string>
+    <string name="food_inventory">Food Inventory</string>
 </resources>
