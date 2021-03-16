@@ -1,14 +1,21 @@
 package com.example.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
-public class Setting extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
 
+
+public class Setting extends AppCompatActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+
+        if(findViewById(R.id.fragment) != null) {
+            if(savedInstanceState != null) {
+                return;
+            }
+            getFragmentManager().beginTransaction().add(R.id.fragment, new Notification()).commit();
+        }
     }
 }
