@@ -90,25 +90,25 @@ public class Recipe extends AppCompatActivity {
     private void addAdapters() {
         for (int i=0; i<itemList.size();i++){
 
-            if (itemList.get(i).toLowerCase().equals("potatoes")||itemList.get(i).toLowerCase().equals("potato")){
+            if (itemList.get(i).toLowerCase().contains("potato")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.potatoes), itemList.get(i)) ;
             }
-            else if(itemList.get(i).toLowerCase().equals("zucchini")){
+            else if(itemList.get(i).toLowerCase().contains("zucchini")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.zucchini), itemList.get(i)) ;
             }
-            else if(itemList.get(i).toLowerCase().equals("green onions")){
+            else if(itemList.get(i).toLowerCase().contains("green onion")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.greenonions), itemList.get(i)) ;
             }
-            else if(itemList.get(i).toLowerCase().equals("sweet onions")){
+            else if(itemList.get(i).toLowerCase().contains("sweet onion")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.sweet_onion), itemList.get(i)) ;
             }
-            else if(itemList.get(i).toLowerCase().equals("mushrooms")){
+            else if(itemList.get(i).toLowerCase().contains("mushroom")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.mushrooms), itemList.get(i)) ;
             }
-            else if(itemList.get(i).toLowerCase().equals("apples")){
+            else if(itemList.get(i).toLowerCase().contains("apple")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.apples), itemList.get(i)) ;
             }
-            else if(itemList.get(i).toLowerCase().equals("jalapenos")){
+            else if(itemList.get(i).toLowerCase().contains("jalapeno")){
                 adapter.addItem(ContextCompat.getDrawable(this, R.drawable.jalapeno), itemList.get(i)) ;
             }
             else {
