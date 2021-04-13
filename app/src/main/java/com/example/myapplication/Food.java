@@ -83,6 +83,14 @@ public class Food extends AppCompatActivity {
 //                    listDB.add(snapshot.toString());
                     keyDB.add(keys);
                 }
+//                for(int j=0; j<dateList.size(); j++) {
+//                    String s =dateList.get(j);
+//                    String d =itemList.get(j);
+//                    Log.d(TAG, d+s +" !!!!!!!!!!!!!!!");
+//                }
+
+
+                //listView.setBackgroundColor(Color.RED);
                 listView.setAdapter(adapter);
                 for (int i = 0; i < itemList.size(); i++) {
                     adapter.addItem(itemList.get(i), dateList.get(i));

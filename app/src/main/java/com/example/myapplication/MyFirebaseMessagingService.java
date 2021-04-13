@@ -13,13 +13,8 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.ArrayList;
-
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-
-    private ArrayList<String> itemList = new ArrayList<String>();
-    private ArrayList<String> dateList = new ArrayList<String>();
 
     @Override
     public void onNewToken(String s) {

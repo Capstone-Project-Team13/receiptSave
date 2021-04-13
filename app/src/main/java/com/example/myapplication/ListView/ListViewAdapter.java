@@ -1,6 +1,7 @@
 package com.example.myapplication.ListView;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +12,21 @@ import android.widget.TextView;
 
 import com.example.myapplication.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class ListViewAdapter extends BaseAdapter {
     private static final int ITEM_VIEW_TYPE_IMAGE = 1;
     private static final int ITEM_VIEW_TYPE_STRING = 2;
     private static final String TAG = "Food";
     private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>() ;
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+    Calendar cal = Calendar.getInstance();
+    Calendar cal2 = Calendar.getInstance();
+    Date date = new Date();
 
     public ListViewAdapter(){
 
@@ -58,9 +67,43 @@ public class ListViewAdapter extends BaseAdapter {
                     textTextView.setText(listViewItem.getText());
                     break;
                 case ITEM_VIEW_TYPE_STRING:
+                    Date exDate = null;
+                    try {
+                        // get expDate.
+                        exDate = simpleDateFormat.parse(listViewItem.getExpDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    // set today + 3 and today + 10
+                    cal.setTime(date);
+                    cal2.setTime(date);
+                    cal.add(Calendar.DATE, 3);
+                    cal2.add(Calendar.DATE, 10);
+                    String today = simpleDateFormat.format(cal.getTime());
+                    String today2 = simpleDateFormat.format(cal2.getTime());
+                    Date toDays = null;
+                    Date toDays2 = null;
+                    try {
+                        toDays = simpleDateFormat.parse(today);
+                        toDays2 = simpleDateFormat.parse(today2);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
                     convertView = inflater.inflate(R.layout.listview_fooditem, parent, false);
                     TextView itemTextView = convertView.findViewById(R.id.fooditems);
                     TextView dateTextView = convertView.findViewById(R.id.expDates);
+                    // compare exdate with today
+                        // color red
+                    if(exDate.before(toDays) ){
+                        dateTextView.setBackgroundColor(Color.RED);
+                        // color yellow
+                    }else if(exDate.after(toDays) && exDate.before(toDays2)){
+                        dateTextView.setBackgroundColor(Color.YELLOW);
+                        // color green
+                    } else{
+                        dateTextView.setBackgroundColor(Color.GREEN);
+                    }
                     itemTextView.setText(listViewItem.getItemName());
                     dateTextView.setText(listViewItem.getExpDate());
                     break;
@@ -76,7 +119,7 @@ public class ListViewAdapter extends BaseAdapter {
         item.setText(text);
         listViewItemList.add(item);
     }
-    public void addItem(String itemName, String expDate) {
+    public void addItem(String itemName, String expDate)  {
         ListViewItem item = new ListViewItem();
         item.setType(ITEM_VIEW_TYPE_STRING);
         item.setItemName(itemName);
