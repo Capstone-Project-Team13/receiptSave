@@ -41,8 +41,7 @@ public class ReceiptDatabase {
         StorageReference reference = FirebaseStorage.getInstance().getReference();
         final String randomKey = UUID.randomUUID().toString();
         StorageReference fileRef = reference.child("images/" + randomKey);
-//        System.out.println("tabara ");
-//         System.out.println("walala "+ user);
+
         //database access
          DatabaseReference root = FirebaseDatabase.getInstance().getReference("ReceiptImages");
         ByteArrayOutputStream stream = new ByteArrayOutputStream();

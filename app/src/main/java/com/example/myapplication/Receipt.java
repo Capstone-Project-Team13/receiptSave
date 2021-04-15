@@ -12,12 +12,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.DatabaseFiles.ReceiptDatabase;
+import com.example.myapplication.DatabaseFiles.ImagetoDatabase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Receipt extends AppCompatActivity {
 
@@ -27,13 +40,42 @@ public class Receipt extends AppCompatActivity {
     private String cameraPermission[];
     private String writePermission[];
 
+    private RecyclerView recyclerView;
+    private ArrayList<ImagetoDatabase> list;
+    private MyAdapter adapter;
+    static String user = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private DatabaseReference root = FirebaseDatabase.getInstance().getReference("ReceiptImages").child(user);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
         cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         writePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        imageView = findViewById(R.id.imageId);
+       //imageView = findViewById(R.id.imageId);
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        list = new ArrayList<>();
+        adapter = new MyAdapter(this,list);
+        recyclerView.setAdapter(adapter);
+
+        root.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    ImagetoDatabase model = dataSnapshot.getValue(ImagetoDatabase.class);
+                    list.add(model);
+                }
+                Collections.reverse(list);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 
@@ -85,7 +127,7 @@ public class Receipt extends AppCompatActivity {
         if (requestCode == CAPTURE_IMAGE) {
             Bundle bundle = data.getExtras();
             imageBitmap = (Bitmap) bundle.get("data");
-            imageView.setImageBitmap(imageBitmap);
+            //imageView.setImageBitmap(imageBitmap);
             ReceiptDatabase.uploadToFirebase(imageBitmap);
 //            if (data != null) {
 //                imageUri = data.getData();

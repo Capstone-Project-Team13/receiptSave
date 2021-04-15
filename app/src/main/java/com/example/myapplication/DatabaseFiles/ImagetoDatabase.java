@@ -3,7 +3,9 @@ package com.example.myapplication.DatabaseFiles;
 public class ImagetoDatabase {
     String Imageurl;
 
+    public ImagetoDatabase(){
 
+    }
 
 
     public ImagetoDatabase(String imageurl) {
