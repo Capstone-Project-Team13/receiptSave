@@ -77,8 +77,8 @@ public class ListViewAdapter extends BaseAdapter {
                     // set today + 3 and today + 10
                     cal.setTime(date);
                     cal2.setTime(date);
-                    cal.add(Calendar.DATE, 3);
-                    cal2.add(Calendar.DATE, 10);
+                    //cal.add(Calendar.DATE, 3);
+                    cal2.add(Calendar.DATE, 7);
                     String today = simpleDateFormat.format(cal.getTime());
                     String today2 = simpleDateFormat.format(cal2.getTime());
                     Date toDays = null;
